@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/fccc8e0d-f02d-4296-921f-38e4af472ddb/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/takusuke",
+    "appService.deploySubpath": "."
+}

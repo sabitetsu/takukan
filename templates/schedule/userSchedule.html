@@ -1,0 +1,57 @@
+<h1>{{user}} Schedule</h1>
+<style>
+    .day{
+        padding: 4px;
+        width: 100px;
+        height: 100px;
+        font-size: 20px;
+        cursor: pointer;
+        background: lime;
+    }
+    .day:disabled {
+        cursor: default;
+        background: gray;
+    }
+    .card_list {
+        margin-top: 20px;
+    }
+    .card{
+        position: relative;
+        border: 1px solid #4d4d4d;
+        border-radius: 8px;
+        padding: 4px 8px;
+        margin: 20px 10px
+    }
+    .card_del{
+        content: "";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+    }
+    .card-dev{
+        width: 100%;
+        margin: 10px 0;
+    }
+
+</style>
+
+
+
+<table>
+    <tr><th colspan="7" class="month">{{year}} {{month}}月</th></tr>
+    <tr><th class="sun">日</th><th class="mon">月</th><th class="tue">火</th><th class="wed">水</th><th class="thu">木</th><th class="fri">金</th><th class="sat">土</th></tr>
+    {% for week in bc %}
+    <tr> 
+        {% for day in week %}
+        <td>
+            <button class="day" {% if day in imp %} disabled {% endif %} value={{day}}>
+                {% if day.0 != month %}
+                    {{day.0}} /
+                {% endif %}
+                {{day.1}}
+            </button>
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>

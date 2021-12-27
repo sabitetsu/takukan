@@ -1,0 +1,103 @@
+<style>
+    .day{
+        padding: 4px;
+        width: 100px;
+        height: 100px;
+        font-size: 20px;
+        cursor: pointer;
+        background: lime;
+    }
+    .day:disabled {
+        cursor: default;
+        background: gray;
+    }
+    .card_list {
+        margin-top: 20px;
+    }
+    .card{
+        position: relative;
+        border: 1px solid #4d4d4d;
+        border-radius: 8px;
+        padding: 4px 8px;
+        margin: 20px 10px
+    }
+    .card_del{
+        content: "";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+    }
+    .card-dev{
+        width: 100%;
+        margin: 10px 0;
+    }
+
+</style>
+
+<h1>卓助</h1>
+<form action="{% url 'takusuke' pk %}" method="POST">
+    {% csrf_token %}
+    <span>タイトル</span>
+    <input name="title" type="text" id="title" value={{title}} />
+</form>
+<form action="{% url 'takusuke' pk %}" method="POST">
+    {% csrf_token %}
+    <span>メンバー</span>
+    <input name="user" type="text" id="user" />
+    <input type="submit" value="追加" /><br>
+    <div class="card_list">
+    {% for list in member %}
+        <span class="card">
+            {{list}}
+            <input name="delete" type="submit" value="×" class="card_del" />
+        </span>
+        
+        {% comment %} {% if forloop.last == False %}
+        ,
+        {% endif %} {% endcomment %}
+    {% endfor %}
+    </div>
+</form>
+
+{% comment %} <ul>
+    {% for u in users %}
+    <li>{{u}}</li>
+    {% endfor %}
+</ul>
+<br> {% endcomment %}
+
+{% comment %} <form action="{% url 'takusuke' 2 %}" method="POST">
+    {% csrf_token %}
+    <input name="title" type="text" id="num" placeholder="表示件数"/>
+</form> {% endcomment %}
+
+{% comment %} {{impossible}} {% endcomment %}
+
+<table>
+    <tr><th colspan="7" class="month">{{year}} {{month}}月</th></tr>
+    <tr><th class="sun">日</th><th class="mon">月</th><th class="tue">火</th><th class="wed">水</th><th class="thu">木</th><th class="fri">金</th><th class="sat">土</th></tr>
+    {% for week in bc %}
+    <tr> 
+        {% for day in week %}
+        <td>
+            <button class="day" {% if day in impossible %} disabled {% endif %} value={{day}}>
+                {% if day.0 != month %}
+                    {{day.0}} /
+                {% endif %}
+                {{day.1}}
+            </button>
+            {% comment %} <form action="{% url 'takusuke' pk %}" method="POST">
+                {% csrf_token %}
+                <input name="submitDate" type="button" id="title" value={{day}} />
+            </form> {% endcomment %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% for date in submitDate %}
+    <span>{{date}}</span>
+{% endfor %}
+
+<button>決定</button>
