@@ -177,7 +177,10 @@ class PersonalScheduleUpdate(UpdateView):
         user = ps.user
         title = ps.title
         members = re.findall(r'\w+',ps.member)
-        dates = re.findall(r'\[\d{4}\D+\d+\D+\d+\]',ps.date)
+        dates_date = re.findall(r'(\d{4})\D+(\d+)\D+(\d+)',ps.date)
+        dates = []
+        for d in dates_date:
+            dates.append([int(d[0]),int(d[1]),int(d[2])])
 
         ## カレンダー作成
         year = datetime.datetime.now().year
@@ -196,11 +199,15 @@ class PersonalScheduleUpdate(UpdateView):
         return render(request, 'schedule/personalScheduleUpdate.html',response_data)
 
     def post(self,request,pk):
+        print(request.POST)
         ps = PersonalSchedule.objects.get(pk=pk)
         user = ps.user
         title = ps.title
         members = re.findall(r'\w+',ps.member)
-        dates = re.findall(r'\[\d{4}\D+\d+\D+\d+\]',ps.date)
+        dates_date = re.findall(r'(\d{4})\D+(\d+)\D+(\d+)',ps.date)
+        dates = []
+        for d in dates_date:
+            dates.append([int(d[0]),int(d[1]),int(d[2])])
         if request.POST.get('title'):
             title = request.POST.get('title')
             ps.title = title
@@ -210,15 +217,30 @@ class PersonalScheduleUpdate(UpdateView):
             ps.member = members
             ps.save()
         if request.POST.get('date'):
-            add_dates = re.findall(r'(\d{4}).(\d+).(\d+)',request.POST.get('date'))
+            add_dates = re.findall(r'(\d{4})\D+(\d+)\D+(\d+)',request.POST.get('date'))
             if add_dates:
                 for d in add_dates:
                     dates.append([int(d[0]),int(d[1]),int(d[2])])
                 ps.date = dates
                 ps.save()
             else:
-                dates.append("形式エラー")
-        
+                dates.append("形式エラー:")
+                dates.append(request.POST.get('date'))
+
+        if request.POST.get('delete'):
+            print("post_date")
+            post_date = re.findall(r'(\d{4})\D+(\d+)\D+(\d+)',request.POST.get('delete'))
+            del_date = []
+            del_date.append([int(post_date[0][0]),int(post_date[0][1]),int(post_date[0][2])])
+            print("del_date")
+            print(del_date[0])
+            try:
+                dates.remove(del_date[0])
+                ps.date = dates
+                ps.save()
+            except:
+                print("error")
+                
         ## カレンダー作成
         year = datetime.datetime.now().year
         month = datetime.datetime.now().month
@@ -241,9 +263,9 @@ class PersonalScheduleUpdate(UpdateView):
             'members': members,
             'dates': dates,
             'pk': pk,
-            'calendar_arr':calendar_arr
+            'calendar_arr':calendar_arr,
         }
-        print(response_data)
+        print(dates[0])
         return render(request, 'schedule/personalScheduleUpdate.html',response_data)
 
 

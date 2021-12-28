@@ -28,6 +28,8 @@
     background: gray;
 }
 .card_list {
+    display: flex;
+    flex-wrap: wrap;
     margin-top: 20px;
 }
 .card{
@@ -35,7 +37,13 @@
     border: 1px solid #4d4d4d;
     border-radius: 8px;
     padding: 4px 8px;
-    margin: 20px 10px
+    margin: 20px 10px;
+    width: 100px;
+    height: 50px;
+    display: flex;
+}
+.card_content{
+    width: 100%;
 }
 .card_del{
     content: "";
@@ -70,25 +78,29 @@
                     <input name="delete" type="submit" value="×" class="card_del" />
                 </span>
             {% endfor %}
-            </span>
+        </span>
     </div>
 </form>
-<form action="{% url 'psupdate' pk %}" method="POST">
-    {% csrf_token %}
+<div>
     <div class="input-container">
         <p class="row">日程</p>
-        <input class="input-text" name="date" type="text" id="date" />
-        <input type="submit" value="追加" />
-        <span class="card_list">
-            {% for list in dates %}
-                <span class="card">
-                    {{list}}
-                    <input name="delete" type="submit" value="×" class="card_del" />
-                </span>
-            {% endfor %}
-            </span>    
+        <form action="{% url 'psupdate' pk %}" method="POST">{% csrf_token %}
+            <input class="input-text" name="date" type="text" id="date" />
+            <input type="submit" value="追加" />
+        </form>
     </div>
-</form>
+    <div class="card_list">
+        {% for list in dates %}
+            <div class="card">
+                <p class="card_content">{{list}}</p>
+                <form action="{% url 'psupdate' pk %}" method="POST">{% csrf_token %}
+                    <input name="delete" value="{{list}}" class="nonedisplay">
+                    <input name="del_date" type="submit" value="×" class="card_del" />
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 {% for month_arr in calendar_arr %}
 <table>
@@ -114,17 +126,15 @@
     <tr>
         {% for day_arr in week_arr %}
         <td>
-            <button class="day" {% if day_arr.1 != month_arr.0.6.1 %} disabled {% endif %} value={{day}}>
-                {% if day_arr.1 != month_arr.0.6.1 %}
-                    {{day_arr.1}} /
-                {% endif %}
-                {{day_arr.2}}
-                {% for sd in schedule_dict %}
-                    {% if day_arr in sd.dates %}
-                        <br><span class="takutitle">{{sd.title}}</span>
+            <form action="{% url 'psupdate' pk %}" method="POST">{% csrf_token %}
+                <input class="nonedisplay" name="date" value="{{day_arr}}">
+                <button class="day" type="submit" {% if day_arr.1 != month_arr.0.6.1 %} disabled {% endif %} value={{day_arr}}>
+                    {% if day_arr.1 != month_arr.0.6.1 %}
+                        {{day_arr.1}} /
                     {% endif %}
-                {% endfor %}
-            </button>
+                    {{day_arr.2}}
+                </button>
+            </form>
         </td>
         {% endfor %}
     </tr>
