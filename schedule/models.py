@@ -36,6 +36,12 @@ class TakuSuke(models.Model):
     submitDate = models.CharField(max_length=500,blank=True)
     status = models.CharField(max_length=50,choices=STATUS,blank=True)
 
+class PersonalSchedule(models.Model):
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200,blank=True)
+    member = models.CharField(max_length=1000,blank=True)
+    date = models.CharField(max_length=1000,blank=True)
+
 
 # class UserModel:
 

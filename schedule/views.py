@@ -1,16 +1,16 @@
-from time import monotonic
 from django.db.models import fields
 from django.http import request, response
 from django.shortcuts import redirect, render
-from django.views.generic import TemplateView,UpdateView
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView,CreateView
+from schedule.models import TakuMember, UserModel, TakuModel, TakuDate, TakuSuke, PersonalSchedule
+from time import monotonic
 
 import calendar
 import itertools
 import datetime
 import re
 
-from django.views.generic.edit import UpdateView
-from schedule.models import TakuMember, UserModel, TakuModel, TakuDate, TakuSuke
 
 def scheduleIndex(request):
     userModel = UserModel.objects.all()
@@ -41,10 +41,8 @@ def scheduleIndex(request):
 '''
 
 '''
-ユーザーの卓一覧
+ユーザーの卓一覧表示
 '''
-
-
 '''
 ユーザーのスケジュール確認画面
 res = user,schedule_dict[{title,dates}],calenders
@@ -95,7 +93,7 @@ class UserView(TemplateView):
 
         return render(request, 'schedule/userSchedule.html',response_data)
     
-
+'''class UserViewに統合
 def userSchedule(request,pk):
     user = pk
     takuList = TakuModel.objects.values('takuID','title').filter(userID=user)
@@ -138,6 +136,19 @@ def userSchedule(request,pk):
         'bc': base_calendar,
     }
     return render(request, 'schedule/userSchedule.html',resData)
+'''
+
+# class UserTakuCreate(CreateView):
+#     template_name = 'schedule/userTakuCreate.html'
+#     model = TakuModel
+#     fields = ('userID','title','charaURL')
+#     success_url = reverse_lazy('scheduleIndex')
+
+class PersonalScheduleCreate(CreateView):
+    template_name = 'schedule/personalScheduleCreate.html'
+    model = PersonalSchedule
+    fields = ('user','title','member','date')
+    success_url = reverse_lazy('scheduleIndex')
 
 def takusukeIndex(request):
     if request.POST.get('title'):
