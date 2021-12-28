@@ -1,4 +1,8 @@
 <style>
+    #title{
+        height: 50px;
+        font-size: 28px;
+    }
     .day{
         padding: 4px;
         width: 100px;
@@ -34,10 +38,9 @@
 
 </style>
 
-<h1>卓助</h1>
+{% comment %} 入力フォーム {% endcomment %}
 <form action="{% url 'takusuke' pk %}" method="POST">
     {% csrf_token %}
-    <span>タイトル</span>
     <input name="title" type="text" id="title" value={{title}} />
 </form>
 <form action="{% url 'takusuke' pk %}" method="POST">
@@ -51,30 +54,17 @@
             {{list}}
             <input name="delete" type="submit" value="×" class="card_del" />
         </span>
-        
-        {% comment %} {% if forloop.last == False %}
-        ,
-        {% endif %} {% endcomment %}
     {% endfor %}
     </div>
 </form>
 
-{% comment %} <ul>
-    {% for u in users %}
-    <li>{{u}}</li>
-    {% endfor %}
-</ul>
-<br> {% endcomment %}
-
-{% comment %} <form action="{% url 'takusuke' 2 %}" method="POST">
-    {% csrf_token %}
-    <input name="title" type="text" id="num" placeholder="表示件数"/>
-</form> {% endcomment %}
-
-{% comment %} {{impossible}} {% endcomment %}
-
+{% comment %} カレンダー {% endcomment %}
 <table>
-    <tr><th colspan="7" class="month">{{year}} {{month}}月</th></tr>
+    <tr>
+        <th> < </th>
+        <th colspan="7" class="month">{{year}}年 {{month}}月</th>
+        <th> > </th>
+    </tr>
     <tr><th class="sun">日</th><th class="mon">月</th><th class="tue">火</th><th class="wed">水</th><th class="thu">木</th><th class="fri">金</th><th class="sat">土</th></tr>
     {% for week in bc %}
     <tr> 
@@ -86,10 +76,6 @@
                 {% endif %}
                 {{day.1}}
             </button>
-            {% comment %} <form action="{% url 'takusuke' pk %}" method="POST">
-                {% csrf_token %}
-                <input name="submitDate" type="button" id="title" value={{day}} />
-            </form> {% endcomment %}
         </td>
         {% endfor %}
     </tr>

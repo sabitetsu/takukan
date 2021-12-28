@@ -1,4 +1,4 @@
-<h1>{{user}} Schedule</h1>
+<h1>{{user_id}} Schedule</h1>
 <style>
     .day{
         padding: 4px;
@@ -32,12 +32,13 @@
         width: 100%;
         margin: 10px 0;
     }
-
+    .takutitle{
+        font-size: 6px;
+    }
 </style>
 
 
-
-<table>
+{% comment %} <table>
     <tr><th colspan="7" class="month">{{year}} {{month}}月</th></tr>
     <tr><th class="sun">日</th><th class="mon">月</th><th class="tue">火</th><th class="wed">水</th><th class="thu">木</th><th class="fri">金</th><th class="sat">土</th></tr>
     {% for week in bc %}
@@ -54,4 +55,33 @@
         {% endfor %}
     </tr>
     {% endfor %}
+</table> {% endcomment %}
+{% for sd in schedule_dict %}
+    <p>{{sd.title}} {{sd.dates}}</p>
+{% endfor %}
+
+{% for month_arr in calendar_arr %}
+<table>
+    <tr><th colspan="7" class="month">{{month_arr.0.6.0}} {{month_arr.0.6.1}}月</th></tr>
+    <tr><th class="sun">日</th><th class="mon">月</th><th class="tue">火</th><th class="wed">水</th><th class="thu">木</th><th class="fri">金</th><th class="sat">土</th></tr>
+    {% for week_arr in month_arr %}
+    <tr> 
+        {% for day_arr in week_arr %}
+        <td>
+            <button class="day" {% if day_arr.1 != month_arr.0.6.1 %} disabled {% endif %} value={{day}}>
+                {% if day_arr.1 != month_arr.0.6.1 %}
+                    {{day_arr.1}} /
+                {% endif %}
+                {{day_arr.2}}
+                {% for sd in schedule_dict %}
+                    {% if day_arr in sd.dates %}
+                        <br><span class="takutitle">{{sd.title}}</span>
+                    {% endif %}
+                {% endfor %}
+            </button>
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
 </table>
+{% endfor %}

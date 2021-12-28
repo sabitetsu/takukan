@@ -1,9 +1,15 @@
 from time import monotonic
+from django.db.models import fields
+from django.http import request, response
 from django.shortcuts import redirect, render
+from django.views.generic import TemplateView,UpdateView
+
 import calendar
 import itertools
 import datetime
 import re
+
+from django.views.generic.edit import UpdateView
 from schedule.models import TakuMember, UserModel, TakuModel, TakuDate, TakuSuke
 
 def scheduleIndex(request):
@@ -30,8 +36,65 @@ def scheduleIndex(request):
         'users': users,
         'hc':hc})
 
+'''
+ユーザーのプロフィール画面
+'''
+
+'''
+ユーザーの卓一覧
+'''
 
 
+'''
+ユーザーのスケジュール確認画面
+res = user,schedule_dict[{title,dates}],calenders
+・今月の予定が見える(デフォ)
+・指定した月の予定が見える
+・複数月指定できる
+・予定のタイトルが見える
+・押すと予定の詳細が見える
+'''
+class UserView(TemplateView):
+    template_name = 'schedule/userSchedule.html'
+
+    def get(self,request,user):
+        ## userの判別
+        try:
+            user_id = self.kwargs.get('user','ぬるぬるID')
+            taku_model = TakuModel.objects.values('takuID','title').filter(userID=user_id)
+        except:
+            # userがGETできない場合
+            # 「クエリを入力してね」か、リダイレクトか未定
+            user_id = "ぬるぽ"
+            taku_model = "ぬるぬるぽぽ"
+            return redirect('/')
+
+        ## ユーザーのスケジュールをschedule_dictに保存
+        schedule_dict = []
+        for tm in taku_model:
+            tm_dates = TakuDate.objects.values('date').filter(takuID=tm.get('takuID'))
+            dates = []
+            for d in tm_dates:
+                # dates[[2021,12,23],[2021,12,24],...]の形で保存
+                dates.append([d.get('date').year,d.get('date').month,d.get('date').day])
+            schedule_dict.append({'title':tm.get('title'), 'dates':dates})
+
+        ## カレンダー作成
+        year = datetime.datetime.now().year
+        month = datetime.datetime.now().month
+        num = 3
+        calendar_arr = calender_method(year,month,num)
+
+        response_data={
+            'user_id': user_id,
+            'schedule_dict': schedule_dict,
+            'calendar_arr':calendar_arr,
+            'year': year,
+            'month': month,
+        }
+
+        return render(request, 'schedule/userSchedule.html',response_data)
+    
 
 def userSchedule(request,pk):
     user = pk
@@ -101,7 +164,9 @@ def takusuke(request,pk):
     if request.POST.get('year'):
         year = request.POST.get('year')
     if request.POST.get('month'):
-        year = request.POST.get('month')
+        month = request.POST.get('month')
+    print(year)
+    print(month)
     
     # title,memberの取得
     try:
@@ -184,3 +249,89 @@ def takusuke(request,pk):
         'submit_date': submit_date,
     }
     return render(request, 'schedule/takusuke.html',resData)
+
+
+'''
+class ScheduleView(TemplateView):
+    year = datetime.datetime.now().year
+    month = datetime.datetime.now().month
+    
+    def get(self, request):
+        try:
+            # スケジュールを見たい人のIDを取ってくる
+            user = request.GET['user']
+            takusukeModel = TakuSuke.objects.get(takusukeID=user)
+        except:
+            # IDがなかった場合orデータがなかった場合
+            print("なんかミスった")
+            return redirect('./')
+        title = ""
+        member = []
+        submit_date = []
+        try:
+            tModel = TakuSuke.objects.values('title','member','submitDate').filter(takusukeID=pk)
+            title = tModel[0]['title']
+            memberTxt = tModel[0]['member']
+            member = re.findall(r'\w+',memberTxt)
+            submitDateTxt = tModel[0]['submitDate']
+            submit_date = re.findall(r'\d+,\d+',submitDateTxt)
+            print(submit_date)
+        except:
+            print(takusukeModel)
+
+        resData = {
+            'pk': pk,
+            'year': year,
+            'month': month,
+            'member': member,
+            'users': users,
+            'bc': base_calendar,
+            'title': title,
+            'impossible': impossible_date,
+            'submit_date': submit_date,
+        }
+        return render(request, 'schedule/takusuke.html',resData)
+
+    def post(self, request):
+        postdata = {}
+        if request.POST.get('year'):
+            year = request.POST.get('year')
+            postdata = {'year':year}
+        if request.POST.get('month'):
+            month = request.POST.get('month')
+        if request.POST.get('user'):
+            member.append(request.POST.get('user'))
+            takusukeModel.member = member
+            takusukeModel.save()
+        if request.POST.get('title'):
+            title = request.POST.get('title')
+        if request.POST.get('submitDate'):
+            submit_date.append(request.POST.get('submitDate'))
+
+
+        return render(request, 'schedule/takusuke.html',postdata)
+'''
+
+# '''
+def calender_method(year,month,num):
+    calendar_arr = []
+    c_month = month
+    c = calendar.Calendar(firstweekday=6)
+    for i in range(num):
+        c_month += i
+        if c_month > 12:
+            c_month %= 12
+            year += 1
+        if c_month <= 0:
+            c_month = 12
+        base_calendar_datetime = c.monthdatescalendar(year,c_month)
+        month_arr = []
+        for week in base_calendar_datetime:
+            week_arr = []
+            for day in week:
+                week_arr.append([day.year,day.month,day.day])
+            month_arr.append(week_arr)
+        calendar_arr.append(month_arr)
+    
+    return calendar_arr
+# '''
