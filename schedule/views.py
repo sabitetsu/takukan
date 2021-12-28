@@ -3,6 +3,7 @@ from django.http import request, response
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView,CreateView
+from django.views.generic.edit import UpdateView
 from schedule.models import TakuMember, UserModel, TakuModel, TakuDate, TakuSuke, PersonalSchedule
 from time import monotonic
 
@@ -93,7 +94,7 @@ class UserView(TemplateView):
 
         return render(request, 'schedule/userSchedule.html',response_data)
     
-'''class UserViewに統合
+'''class UserViewに統合 削除予定
 def userSchedule(request,pk):
     user = pk
     takuList = TakuModel.objects.values('takuID','title').filter(userID=user)
@@ -146,6 +147,12 @@ def userSchedule(request,pk):
 
 class PersonalScheduleCreate(CreateView):
     template_name = 'schedule/personalScheduleCreate.html'
+    model = PersonalSchedule
+    fields = ('user','title','member','date')
+    success_url = reverse_lazy('scheduleIndex')
+
+class PersonalScheduleUpdate(UpdateView):
+    template_name = 'schedule/personalScheduleUpdate.html'
     model = PersonalSchedule
     fields = ('user','title','member','date')
     success_url = reverse_lazy('scheduleIndex')

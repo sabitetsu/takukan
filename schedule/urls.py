@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from schedule.views import scheduleIndex, takusuke, takusukeIndex, UserView, PersonalSchedule
+from schedule.views import scheduleIndex, takusuke, takusukeIndex, UserView, PersonalScheduleCreate, PersonalScheduleUpdate
 
 urlpatterns = [
     path('', views.scheduleIndex, name='scheduleIndex'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('user/<str:user>/',views.UserView.as_view(), name='userView'),
     # path('create/',views.UserTakuCreate.as_view(),name='userCreate'),
     path('pscreate/',views.PersonalScheduleCreate.as_view(),name='pscreate'),
+    path('psupdate/<int:pk>',views.PersonalScheduleUpdate.as_view(),name='psupdate'),
 ]
