@@ -22,12 +22,12 @@ def scheduleIndex(request):
     for i in userModel:
         users.append(i.userID)
 
-    for i in takuDate:
-        print(i.date)
+    # for i in takuDate:
+    #     print(i.date)
     
     calendar.setfirstweekday(6)
     hc = calendar.monthcalendar(2021,12)
-    print(hc)
+    # print(hc)
 
     return render(request, 'schedule/index.html',{
         'userModel': userModel,
@@ -44,6 +44,8 @@ def scheduleIndex(request):
 '''
 ユーザーの卓一覧表示
 '''
+
+
 '''
 ユーザーのスケジュール確認画面
 res = user,schedule_dict[{title,dates}],calenders
@@ -78,6 +80,18 @@ class UserView(TemplateView):
                 dates.append([d.get('date').year,d.get('date').month,d.get('date').day])
             schedule_dict.append({'title':tm.get('title'), 'dates':dates})
 
+        ## パーソナルスケジュールを保存
+        ps_models = PersonalSchedule.objects.values('title','date').filter(user=user_id)
+        ps_dict = []
+        for ps in ps_models:
+            ps_dates = re.findall(r'(\d{4})\D+(\d+)\D+(\d+)',ps.get('date'))
+            dates = []
+            for d in ps_dates:
+                dates.append([int(d[0]),int(d[1]),int(d[2])])
+            ps_dict.append({'title':ps.get('title'), 'dates': dates})
+        
+
+
         ## カレンダー作成
         year = datetime.datetime.now().year
         month = datetime.datetime.now().month
@@ -88,6 +102,7 @@ class UserView(TemplateView):
             'user_id': user_id,
             'schedule_dict': schedule_dict,
             'calendar_arr':calendar_arr,
+            'ps_dict':ps_dict,
             'year': year,
             'month': month,
         }
@@ -156,7 +171,6 @@ class PersonalScheduleUpdate(UpdateView):
     model = PersonalSchedule
     fields = ('user','title','member','date')
     success_url = reverse_lazy('scheduleIndex')
-    print("sucess")
 
     def get(self,request,pk):
         ps = PersonalSchedule.objects.get(pk=pk)

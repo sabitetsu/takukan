@@ -12,6 +12,12 @@
         cursor: default;
         background: gray;
     }
+    .takufilled{
+        background: pink;
+    }
+    .psfilled{
+        background: brown;
+    }
     .card_list {
         margin-top: 20px;
     }
@@ -68,7 +74,12 @@
     <tr> 
         {% for day_arr in week_arr %}
         <td>
-            <button class="day" {% if day_arr.1 != month_arr.0.6.1 %} disabled {% endif %} value={{day}}>
+            <button 
+              class="day 
+                {% for sd in schedule_dict %}{% if day_arr in sd.dates %} takufilled {% endif %}{% endfor %}
+                {% for ps in ps_dict %}{% if day_arr in ps.dates %} psfilled {% endif %}{% endfor %}" 
+              {% if day_arr.1 != month_arr.0.6.1 %} disabled {% endif %} 
+              value={{day}}>
                 {% if day_arr.1 != month_arr.0.6.1 %}
                     {{day_arr.1}} /
                 {% endif %}
@@ -76,6 +87,11 @@
                 {% for sd in schedule_dict %}
                     {% if day_arr in sd.dates %}
                         <br><span class="takutitle">{{sd.title}}</span>
+                    {% endif %}
+                {% endfor %}
+                {% for ps in ps_dict %}
+                    {% if day_arr in ps.dates %}
+                        <br><span class="takutitle">{{ps.title}}</span>
                     {% endif %}
                 {% endfor %}
             </button>
