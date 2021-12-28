@@ -156,6 +156,73 @@ class PersonalScheduleUpdate(UpdateView):
     model = PersonalSchedule
     fields = ('user','title','member','date')
     success_url = reverse_lazy('scheduleIndex')
+    print("sucess")
+
+    def get(self,request,pk):
+        print(self.kwargs)
+        ps = PersonalSchedule.objects.values('title','member','date').get(pk=pk)
+        title = ps.get('title')
+        members = re.findall(r'\w+',ps.get('member'))
+        try:
+            dates = re.findall(r'\[\d{4},\d{2},\d{2}\]',ps.get('date'))
+        except:
+            dates = ps.get('date')
+        if self.kwargs.get('title'):
+            title = self.kwargs.get('title')
+        elif self.kwargs.get('member'):
+            members.append(self.kwargs.get('member'))
+        elif self.kwargs.get('date'):
+            dates.append(self.kwargs.get('member'))
+        else:
+            print("psPOSTエラー")
+        members.append(self.kwargs.get('member','エラーくん'))
+        
+        response_data={
+            'title': title,
+            'members': members,
+            'dates': dates,
+            'pk': pk,
+        }
+        print(response_data)
+        return render(request, 'schedule/personalScheduleUpdate.html',response_data)
+
+    def post(self,request,pk):
+        ps_model = PersonalSchedule.objects.get(pk=pk)
+        ps = PersonalSchedule.objects.values('title','member','date').get(pk=pk)
+        title = ps.get('title')
+        members = re.findall(r'\w+',ps.get('member'))
+        dates = re.findall(r'\[\d{4},\d+,\d+\]',ps.get('date'))
+        if request.POST.get('title'):
+            title = request.POST.get('title')
+        elif request.POST.get('member'):
+            members.append(request.POST.get('member'))
+        elif request.POST.get('date'):
+            add_dates = re.findall(r'(\d{4}).(\d+).(\d+)',request.POST.get('date'))
+            if add_dates:
+                for d in add_dates:
+                    dates.append([int(d[0]),int(d[1]),int(d[2])])
+            else:
+                dates.append("形式エラー")
+        else:
+            print("psPOSTエラー")
+        # try:
+        #     add_dates = re.findall(r'(\d{4}).(\d+).(\d+)',request.POST.get('date'))
+        #     for d in add_dates:
+        #         dates.append([int(d[0]),int(d[1]),int(d[2])])
+        # except:
+        #     dates.append(request.POST.get('date'))
+
+        response_data={
+            'title': title,
+            'members': members,
+            'dates': dates,
+            'pk': pk,
+        }
+        print(response_data)
+        return render(request, 'schedule/personalScheduleUpdate.html',response_data)
+
+
+
 
 def takusukeIndex(request):
     if request.POST.get('title'):

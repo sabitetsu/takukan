@@ -1,4 +1,37 @@
-<form action="" method="POST">{% csrf_token %}
+{% comment %} <form action="" method="POST">{% csrf_token %}
     {{form.as_p}}
     <input type="submit" value="保存">
+</form> {% endcomment %}
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <input name="title" type="text" id="title" value={{title}} />
+</form>
+<form action="{% url 'psupdate' pk %}" method="POST">
+    {% csrf_token %}
+    <span>メンバー</span>
+    <input name="member" type="text" id="member" />
+    <input type="submit" value="追加" /><br>
+    <div class="card_list">
+    {% for list in members %}
+        <span class="card">
+            {{list}}
+            <input name="delete" type="submit" value="×" class="card_del" />
+        </span>
+    {% endfor %}
+    </div>
+</form>
+<form action="" method="POST">
+    {% csrf_token %}
+    <span>日程</span>
+    <input name="date" type="text" id="date" />
+    <input type="submit" value="追加" /><br>
+    <div class="card_list">
+    {% for list in dates %}
+        <span class="card">
+            {{list}}
+            <input name="delete" type="submit" value="×" class="card_del" />
+        </span>
+    {% endfor %}
+    </div>
 </form>
