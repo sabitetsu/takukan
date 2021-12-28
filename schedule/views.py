@@ -159,64 +159,75 @@ class PersonalScheduleUpdate(UpdateView):
     print("sucess")
 
     def get(self,request,pk):
-        print(self.kwargs)
-        ps = PersonalSchedule.objects.values('title','member','date').get(pk=pk)
-        title = ps.get('title')
-        members = re.findall(r'\w+',ps.get('member'))
-        try:
-            dates = re.findall(r'\[\d{4},\d{2},\d{2}\]',ps.get('date'))
-        except:
-            dates = ps.get('date')
-        if self.kwargs.get('title'):
-            title = self.kwargs.get('title')
-        elif self.kwargs.get('member'):
-            members.append(self.kwargs.get('member'))
-        elif self.kwargs.get('date'):
-            dates.append(self.kwargs.get('member'))
-        else:
-            print("psPOSTエラー")
-        members.append(self.kwargs.get('member','エラーくん'))
-        
+        ps = PersonalSchedule.objects.get(pk=pk)
+        user = ps.user
+        title = ps.title
+        members = re.findall(r'\w+',ps.member)
+        dates = re.findall(r'\[\d{4}\D+\d+\D+\d+\]',ps.date)
+
+        ## カレンダー作成
+        year = datetime.datetime.now().year
+        month = datetime.datetime.now().month
+        num = 1
+        calendar_arr = calender_method(year,month,num)
+
         response_data={
+            'user':user,
             'title': title,
             'members': members,
             'dates': dates,
             'pk': pk,
+            'calendar_arr':calendar_arr,
         }
-        print(response_data)
         return render(request, 'schedule/personalScheduleUpdate.html',response_data)
 
     def post(self,request,pk):
-        ps_model = PersonalSchedule.objects.get(pk=pk)
-        ps = PersonalSchedule.objects.values('title','member','date').get(pk=pk)
-        title = ps.get('title')
-        members = re.findall(r'\w+',ps.get('member'))
-        dates = re.findall(r'\[\d{4},\d+,\d+\]',ps.get('date'))
+        ps = PersonalSchedule.objects.get(pk=pk)
+        user = ps.user
+        title = ps.title
+        members = re.findall(r'\w+',ps.member)
+        dates = re.findall(r'\[\d{4}\D+\d+\D+\d+\]',ps.date)
         if request.POST.get('title'):
             title = request.POST.get('title')
-        elif request.POST.get('member'):
+            ps.title = title
+            ps.save()
+        if request.POST.get('member'):
             members.append(request.POST.get('member'))
-        elif request.POST.get('date'):
+            ps.member = members
+            ps.save()
+        if request.POST.get('date'):
             add_dates = re.findall(r'(\d{4}).(\d+).(\d+)',request.POST.get('date'))
             if add_dates:
                 for d in add_dates:
                     dates.append([int(d[0]),int(d[1]),int(d[2])])
+                ps.date = dates
+                ps.save()
             else:
                 dates.append("形式エラー")
-        else:
-            print("psPOSTエラー")
-        # try:
-        #     add_dates = re.findall(r'(\d{4}).(\d+).(\d+)',request.POST.get('date'))
-        #     for d in add_dates:
-        #         dates.append([int(d[0]),int(d[1]),int(d[2])])
-        # except:
-        #     dates.append(request.POST.get('date'))
+        
+        ## カレンダー作成
+        year = datetime.datetime.now().year
+        month = datetime.datetime.now().month
+        num = 1
+        if request.POST.get('nowyear'):
+            year = int(request.POST.get('nowyear'))
+        if request.POST.get('nowmonth'):
+            month = int(request.POST.get('nowmonth'))
+        if request.POST.get('updown')=='>':
+            month += 1
+        if request.POST.get('updown')=='<':
+            month -= 1
+            if month <= 0:
+                year -= 1
+        calendar_arr = calender_method(year,month,num)
 
         response_data={
+            'user': user,
             'title': title,
             'members': members,
             'dates': dates,
             'pk': pk,
+            'calendar_arr':calendar_arr
         }
         print(response_data)
         return render(request, 'schedule/personalScheduleUpdate.html',response_data)
@@ -401,15 +412,16 @@ class ScheduleView(TemplateView):
 def calender_method(year,month,num):
     calendar_arr = []
     c_month = month
+    c_year = year
     c = calendar.Calendar(firstweekday=6)
     for i in range(num):
         c_month += i
         if c_month > 12:
             c_month %= 12
-            year += 1
+            c_year += 1
         if c_month <= 0:
             c_month = 12
-        base_calendar_datetime = c.monthdatescalendar(year,c_month)
+        base_calendar_datetime = c.monthdatescalendar(c_year,c_month)
         month_arr = []
         for week in base_calendar_datetime:
             week_arr = []
