@@ -228,12 +228,9 @@ class PersonalScheduleUpdate(UpdateView):
                 dates.append(request.POST.get('date'))
 
         if request.POST.get('delete'):
-            print("post_date")
             post_date = re.findall(r'(\d{4})\D+(\d+)\D+(\d+)',request.POST.get('delete'))
             del_date = []
             del_date.append([int(post_date[0][0]),int(post_date[0][1]),int(post_date[0][2])])
-            print("del_date")
-            print(del_date[0])
             try:
                 dates.remove(del_date[0])
                 ps.date = dates
@@ -265,7 +262,8 @@ class PersonalScheduleUpdate(UpdateView):
             'pk': pk,
             'calendar_arr':calendar_arr,
         }
-        print(dates[0])
+        print(dates)
+        print(calendar_arr)
         return render(request, 'schedule/personalScheduleUpdate.html',response_data)
 
 

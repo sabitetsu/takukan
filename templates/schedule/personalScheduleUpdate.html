@@ -27,6 +27,9 @@
     cursor: default;
     background: gray;
 }
+.psfilled{
+    background: brown;
+}
 .card_list {
     display: flex;
     flex-wrap: wrap;
@@ -128,7 +131,7 @@
         <td>
             <form action="{% url 'psupdate' pk %}" method="POST">{% csrf_token %}
                 <input class="nonedisplay" name="date" value="{{day_arr}}">
-                <button class="day" type="submit" {% if day_arr.1 != month_arr.0.6.1 %} disabled {% endif %} value={{day_arr}}>
+                <button class="day {% if day_arr in dates %} psfilled {% endif %}" type="submit" {% if day_arr.1 != month_arr.0.6.1 %} disabled {% endif %} value={{day_arr}}>
                     {% if day_arr.1 != month_arr.0.6.1 %}
                         {{day_arr.1}} /
                     {% endif %}
