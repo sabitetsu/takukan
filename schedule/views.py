@@ -220,7 +220,7 @@ class PersonalScheduleUpdate(UpdateView):
             add_dates = re.findall(r'(\d{4})\D+(\d+)\D+(\d+)',request.POST.get('date'))
             if add_dates:
                 for d in add_dates:
-                    dates.append([int(d[0]),int(d[1]),int(d[2])])
+                    dates.append([int(d[0]),int(d[1]),int(d[2])])           
                 ps.date = dates
                 ps.save()
             else:

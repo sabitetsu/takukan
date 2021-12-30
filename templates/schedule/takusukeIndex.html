@@ -1,5 +1,9 @@
+{% extends 'schedule/base.html' %}
+
+{% block content %}
 <form action="{% url 'takusukeIndex' %}" method="POST">
     {% csrf_token %}
     <input name="title" type="text" />
     <input type="submit" value="新規作成" />
 </form>
+{% endblock %}

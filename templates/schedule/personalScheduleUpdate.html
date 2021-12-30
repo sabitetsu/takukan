@@ -1,8 +1,6 @@
-{% comment %} <form action="" method="POST">{% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value="保存">
-</form> {% endcomment %}
+{% extends 'schedule/base.html' %}
 
+{% block content %}
 <style>
 .nonedisplay{
     display: none;
@@ -41,7 +39,7 @@
     border-radius: 8px;
     padding: 4px 8px;
     margin: 20px 10px;
-    width: 100px;
+    width: 120px;
     height: 50px;
     display: flex;
 }
@@ -144,3 +142,5 @@
     {% endfor %}
 </table>
 {% endfor %}
+
+{% endblock %}

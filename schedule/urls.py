@@ -5,11 +5,8 @@ from schedule.views import scheduleIndex, takusuke, takusukeIndex, UserView, Per
 urlpatterns = [
     path('', views.scheduleIndex, name='scheduleIndex'),
     path('takusuke/',views.takusukeIndex, name='takusukeIndex'),
-    # path('takusukeCreate/',views.takusukeCreate, name='takusukeCreate'),
     path('takusuke/<int:pk>',views.takusuke, name="takusuke"),
-    # path('<str:pk>/',views.userSchedule, name='userSchedule'),
     path('user/<str:user>/',views.UserView.as_view(), name='userView'),
-    # path('create/',views.UserTakuCreate.as_view(),name='userCreate'),
     path('pscreate/',views.PersonalScheduleCreate.as_view(),name='pscreate'),
     path('psupdate/<int:pk>',views.PersonalScheduleUpdate.as_view(),name='psupdate'),
 ]
