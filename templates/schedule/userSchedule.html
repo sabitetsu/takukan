@@ -47,25 +47,6 @@
     }
 </style>
 
-
-{% comment %} <table>
-    <tr><th colspan="7" class="month">{{year}} {{month}}月</th></tr>
-    <tr><th class="sun">日</th><th class="mon">月</th><th class="tue">火</th><th class="wed">水</th><th class="thu">木</th><th class="fri">金</th><th class="sat">土</th></tr>
-    {% for week in bc %}
-    <tr> 
-        {% for day in week %}
-        <td>
-            <button class="day" {% if day in imp %} disabled {% endif %} value={{day}}>
-                {% if day.0 != month %}
-                    {{day.0}} /
-                {% endif %}
-                {{day.1}}
-            </button>
-        </td>
-        {% endfor %}
-    </tr>
-    {% endfor %}
-</table> {% endcomment %}
 {% for sd in schedule_dict %}
     <p>{{sd.title}} {{sd.dates}}</p>
 {% endfor %}
